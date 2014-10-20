@@ -524,6 +524,16 @@ on_compline_activated(GtkCompletionLine *cl, struct gigi *g)
   }
 }
 
+static gboolean
+on_focus_out(GtkCompletionLine *cl, GdkEvent* event, gpointer user_data)
+{
+  int val;
+  if (configuration.get_int("ExitOnLoseFocus", val) && val) {
+    exit(0);
+  }
+  return true;
+}
+
 /**
  Check if screen contain ponter and return coords
  Taked from Xfce: libxfcegui4
@@ -778,6 +788,10 @@ int main(int argc, char **argv)
 
   gtk_signal_connect(GTK_OBJECT(compline), "ext_handler",
                      GTK_SIGNAL_FUNC(on_ext_handler), &g);
+
+  gtk_signal_connect(GTK_OBJECT(compline), "focus-out-event",
+                     GTK_SIGNAL_FUNC(on_focus_out), &g);
+  
   gtk_widget_show(compline);
 
   int shows_last_history_item;
